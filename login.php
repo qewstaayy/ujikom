@@ -64,7 +64,6 @@ if($_SERVER["REQUEST_METHOD"] == 'POST'){
         <label>Password:</label>
         <input type="password" name="password" required><br>
         <button type="submit">Login</button>
-        <input type="date" placeholder="See full calender" name="date">
     </form>
     <p> Belum punya akun? <a href="register.php">Daftar disini</a>
     

@@ -11,12 +11,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     //upload gambar
     $image_name = $_FILES['image']['name'];
-    $image_tmp = $_FILES['image']['tmpt_name'];
+    $image_tmp = $_FILES['image']['tmp_name'];
     $image_path = "uploads/" . $image_name;
     move_uploaded_file($image_tmp, $image_path);
 
     //Simpan ke dalam database 
-    $query = "Insert into product (name, description, price, stock, category_id, image) Values (?, ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO product (name, description, price, stock, category_id, image) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("ssdiss", $name, $description, $price, $stock, $category_id, $image_name);
 

@@ -21,6 +21,6 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== "admin") {
     <p> This is your page</p>
 
     <h3> Manage ur Products</h3>
-    <a href="add_product.php"> Add New product</a>
+    <a href="form_product.php"> Add New product</a>
 </body>
 </html>
