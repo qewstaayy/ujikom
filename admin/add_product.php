@@ -8,24 +8,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $price = $_POST['price'];
     $stock = $_POST['stock'];
     $category_id = $_POST['category_id'];
-    
-    //upload gambar
-    $image_name = $_FILES['image']['name'];
-    $image_tmp = $_FILES['image']['tmp_name'];
-    $image_path = "uploads/" . $image_name;
-    move_uploaded_file($image_tmp, $image_path);
 
-    //Simpan ke dalam database 
-    $query = "INSERT INTO product (name, description, price, stock, category_id, image) VALUES (?, ?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("ssdiss", $name, $description, $price, $stock, $category_id, $image_name);
-
-    if ($stmt->execute()){
-        echo"Produk Berhasil ditambahkan!";
-    } else{
-        echo "ERROR: ". $stmt->error;
+    //Memastikan apakah folder uploads ada 
+    $upload_dir = "uploads/";
+    if(!is_dir($upload_dir)){
+        mkdir($upload_dir, 0777, true);
     }
 
-    $stmt->close();
-    $conn->close();
+    //Uploads gambar dengan validasi 
+    $image_name = basename($_FILES['image']['name']);
+    $target_file = $upload_dir . $image_name;
+
+    if(move_uploaded_file($_FILES['image']['tmp_name'], $target_file)){
+        //Simpan ke dalam database 
+        $query = "INSERT INTO products (name, description, price, stock, category_id, image) VALUES (?, ?, ?, ?, ?, ?)";
+        echo "Query: " . $query;
+        $stmt = $conn->prepare($query);
+
+        if(!$stmt){
+            die("Error pada prepare statement: " .$conn->error);
+        }
+
+        $stmt->bind_param("ssdiis", $name, $description, $price, $stock, $category_id, $image_name);
+
+        if ($stmt->execute()){
+            echo"Produk Berhasil ditambahkan!";
+            header("Location: admin.php");
+        } else{
+            echo "ERROR: ". $stmt->error;
+        }
+
+        $stmt->close();
+        $conn->close();
+    }
 }

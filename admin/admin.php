@@ -53,19 +53,23 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== "admin") {
             background-color: #575757;
             padding-left: 10px;
         }
-        .main-content{
-            margin-left: 150px;
-            padding: 20px;
+        .main-content {
+            margin-left: 250px;
+            padding: 40px;
             flex-grow: 1;
-            background-color: #f4f4f4;
-            height: 100vh;
-            text-align: center;
+            background: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        header{
-            background-color: #444;
+        header {
+            background: #34495e;
             color: white;
-            padding: 10px;
+            padding: 15px;
             text-align: center;
+            width: 100%;
+            border-radius: 8px;
         }
         .btn{
             display:inline-block ;
@@ -79,19 +83,15 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== "admin") {
         .btn:hover{
             background-color: #218838;
         }
-        .product-list{
-            margin-top: 80px;
-            padding: 30px;
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
-            width: 900px;
+        .product-list {
+            margin-top: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 900px;
             text-align: center;
-            position: absolute;
-            top: 40%;
-            left: 55%;
-            right: 10%;
-            transform: translate(-50%, -50%);
         }
         .product-list h2{
             margin-bottom: 15px;
@@ -136,7 +136,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== "admin") {
             if (mysqli_num_rows($result) > 0){
                 while($row = mysqli_fetch_assoc($result)){
                     echo "<div class='product-item'>";
-                    echo "<strong>" . htmlspecialchars($row['name']) . "</strong> - " . htmlspecialchars($row['price']) . "";
+                    echo "<strong>" . htmlspecialchars($row['name']) . "</strong> - Rp " . number_format($row['price'], 0, ',','.');
                     echo "</div>";
             }
             } else{
