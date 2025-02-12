@@ -143,7 +143,7 @@
             <ul> 
                 <li><a href=""> Dashboard</a></li>
                 <li><a href="form_product.php"> Add a new product</a></li>
-                <li><a href="logout.php"> Logout</a></li>
+                <li><a href="../login.php" onclick="return confirm('Are you sure want to log out?');"> Logout</a></li>
             </ul>
         </div>
             <div class="main-content">
