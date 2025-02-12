@@ -83,55 +83,52 @@
             .btn:hover{
                 background-color: #218838;
             }
-            .product-list {
-                margin-top: 30px;
-                padding: 25px;
-                background: white;
-                border-radius: 8px;
-                box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-                width: 90%;
-                max-width: 900px;
+            table {
+                width: 80%;
+                margin-top: 40px;
+                background-color: white;
+                border-radius: 15px;
+                overflow: hidden;
+                border-collapse: collapse;
+            }
+            th, td {
+                padding: 15px;
                 text-align: center;
+                border-bottom: 2px solid #ddd;
+            }   
+            tr:last-child td{
+                border-bottom: none; /* Hilangkan border bawah pada baris terakhir */
             }
-            .product-list h2{
-                margin-bottom: 15px;
+            th{
+                background-color: #2c3e50;
+                color: white;
             }
-            .product-item{
-                padding: 10px;
-                border-bottom: 1px solid #ddd;
+            td{
+                font-size: 16px;
+                color:black;
             }
-            .product-item:last-child{
-                border-bottom: none;
-            }
-            .no-products{
-                padding: 20px;
-                color: #888;
-            }
-            .product-item:last-child{
-                border-bottom: none;
-            }
-            .product-item{
-                display: flex;
-                gap: 240px;
-            }
-            .product-actions{
-                display: flex;
-                gap: 10px;
-            }
+            
             .btn-update{
+                display: inline-block;
                 background-color: #ffc107;
                 color: black;
-                padding: 5px 10px;
+                padding: 8px 12px;
+                margin: 5px;
                 text-decoration: none;
                 border-radius: 5px;
-            }
-            .btn-delete{
+                font-size: 14px;
+             }
+            .btn-delete {
+                display: inline-block;
                 background-color: #dc3545;
                 color: white;
-                padding: 5px 10px;
+                padding: 8px 12px;
+                margin: 5px;
+                border-radius: 5px;
+                font-size: 14px;
                 text-decoration: none;
                 border-radius: 5px;
-            }
+             }
             .btn-update:hover{
                 background-color: #e0a800;
             }
@@ -154,31 +151,38 @@
             <p> This is your page</p>
             <h3> Manage ur Products</h3>
             <a href="form_product.php" class="btn"> Add New product</a>
+            
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Stock</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
 
-            <section class="product-list">
-                <h2> Your Products</h2>
                 <?php 
                 include '../config.php';
-                if(!$conn){
-                    die("Database connection failed: " . mysqli_connect_error());
-                }
 
                 $result = mysqli_query($conn, "SELECT * FROM products");
-                if (mysqli_num_rows($result) > 0){
-                    while($row = mysqli_fetch_assoc($result)){
-                        echo "<div class='product-item'>";
-                        echo "<strong>" . htmlspecialchars($row['name']) . "</strong>  Rp " . number_format($row['price'], 0, ',','.');
-                        echo "<div class='product-actions'>";
-                        echo "<a href='edit_product.php?id=" . $row['id'] . "' class='btn-update' >Update</a>";
-                        echo "<a href='delete_product.php?id=" . $row['id'] . "' class='btn-delete' onclick ='return confirm (\"Are You sure?\")'> Delete </a>";
-                        echo "</div>";
-                        echo "</div>";
-                }
-                } else{
-                    echo"<div class='no-products'> No Products Avaiable.</div>";
+
+                if (mysqli_num_rows($result) > 0) {
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        echo "<tr>";
+                        echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['stock']) . "</td>";
+                        echo "<td>Rp " . number_format($row['price'], 0, ',', '.') . "</td>";
+                        echo "<td>
+                                <a href='edit.php?id=" . $row['id'] . "' class='btn-update'>Update</a>
+                                <a href='delete.php?id=" . $row['id'] . "' class='btn-delete' onclick='return confirm(\"Are you sure?\")'>Delete</a>
+                              </td>";
+                        echo "</tr>";
+                    }
+                } else {
+                    echo "<tr><td colspan='4' style='text-align:center;'>No Products Available.</td></tr>";
                 }
                 ?>
-            </section>
+            </table>
+
         </div>
     </body>
     </html>
