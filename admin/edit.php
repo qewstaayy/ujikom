@@ -12,9 +12,9 @@ if(isset($_GET['id'])){
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-    $name = $_POST[name];
-    $stock = $_POST[stock];
-    $price = $_POST[price];
+    $name = $_POST['name'];
+    $stock = $_POST['stock'];
+    $price = $_POST['price'];
 
     $updateQuery = "UPDATE products SET name =?, stock = ?, price = ? WHERE id =?";
     $stmt = $conn->prepare($updateQuery);
