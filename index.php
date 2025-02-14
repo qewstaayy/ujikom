@@ -10,17 +10,24 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <title>BloomÉlégance</title>
     <style>
         body{
             margin: 0;
             padding: 0;
             text-align: center;
+            font-family: poppins;
+            background-color: #F4CCE9;          
+            color: #56021F;
         }
         header{
-            background-color: #ff6699;
+            background-color: #56021F;
             padding: 15px;
             color: white;
+        }
+        h1,h2,h3{
+            color: #7D1C4A;
         }
         nav a{
             color: white;
@@ -33,11 +40,14 @@ $result = $conn->query($sql);
             color: black;
         }
         .btn{
-            background-color: #ff6699;
+            background-color: #7D1C4A;
             padding: 10px 20px;
             color: white;
             text-decoration: none;
             border-radius: 5px;
+        }
+        .btn:hover{
+            background-color: #D17D98;
         }
         .katalog{
             padding: 20px;
@@ -49,10 +59,10 @@ $result = $conn->query($sql);
             gap: 20px;
         }
         .produk-card{
-            border: 1px solid #ddd;
+            border: 1px solid #D17D98;
             padding: 10px;
             border-radius: 10px;
-            background-color: #fff;
+            background-color: white;
             box-shadow: 0 4px 5px rgba(0,0,0,0.1);
             width: 200px;
             text-align: center;
@@ -84,18 +94,18 @@ $result = $conn->query($sql);
     <header> 
         <h1>BloomÉlégance</h1>
         <nav> 
-            <a href="#"> Home</a>
-            <a href="#"> Katalog</a>
+            <a href=""> Home</a>
+            <a href="/ujikom/users/katalog.php"> Katalog</a>
             <a href="#"> Tentang kami</a>
             <a href="login.php">Login</a>
         </nav>
     </header>
 
     <section class="hero">
-        <h2> Temukan keindahan alma dalam setiap Buket</h2
+        <h2> Temukan keindahan alma dalam setiap Buket</h2>
         <p>berbagai pilihan buket bungan akan hadir dalam setiap momen</p>
-        <a href="katolog.php" class="btn">Lihat Katalog</a>
-    </section>
+        <a href="/ujikom/users/katalog.php" class="btn">Lihat Katalog</a>
+        </section>
 
     <section class="katalog">
         <h2> produk populer</h2>
