@@ -54,21 +54,42 @@ $total_pages = ceil($total_row['total'] / $limit);
     <title>Katalog Produk - BloomÉlégance</title>
     <style>
         body {
-            font-family: Poppins, sans-serif;
+           
             margin: 0;
             padding: 0;
             text-align: center;
-            background-color: #f9f9f9;
+            font-family: poppins;
+            background-color: #F4CCE9;          
+            color: #56021F;
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        .main-content{
+            flex: 1;
         }
         header {
-            background-color: #ff6699;
+            background-color: #56021F;
             padding: 15px;
             color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        nav a {
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
             color: white;
-            text-decoration: none;
-            margin: 0 15px;
+            text-decoration: none; /* Hapus garis bawah */
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #D17D98;
         }
         .container {
             padding: 20px;
@@ -156,19 +177,28 @@ $total_pages = ceil($total_row['total'] / $limit);
         .pagination a:hover {
             background: #d45582;
         }
+        
+        footer{
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            margin-top: auto;
+        }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>BloomÉlégance</h1>
-    <nav>
-        <a href="../index.php">Home</a>
-        <a href="katalog.php">Katalog</a>
-        <a href="#">Tentang Kami</a>
-        <a href="login.php">Login</a>
-    </nav>
-</header>
+<header> 
+        <h1>BloomÉlégance</h1>
+        <nav class="nav-links">
+            <a href="/ujikom/index.php">Home</a>
+            <a href="/ujikom/users/katalog.php">Katalog</a>
+            <a href="#">Tentang kami</a>
+            <a href="login.php">Login</a>
+        </nav>
+        <a href="/ujikom/users/keranjang.php" class="cart-icon">🛒</a>
+    </header>
 
 <div class="container">
     <h2>Katalog Produk Kami</h2>
@@ -187,20 +217,20 @@ $total_pages = ceil($total_row['total'] / $limit);
             <button type="submit">Cari</button>
         </form>
     </div>
-
     <div class="produk-container">
-        <?php if ($result->num_rows > 0): ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
-                <div class="produk-card">
-                    <img src="/ujikom/admin/uploads/<?= htmlspecialchars($row["image"]) ?>" alt="<?= htmlspecialchars($row["name"]) ?>">
-                    <h3><?= htmlspecialchars($row["name"]) ?></h3>
-                    <p>Rp <?= number_format($row["price"], 0, ',', '.') ?></p>
-                    <a href="detail_produk.php?id=<?= $row["id"] ?>" class="detail-btn">🔍 Lihat Detail</a>
-                </div>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <p style="color:red; font-weight:bold;">Produk tidak ditemukan.</p>
-        <?php endif; ?>
+        <?php 
+            if ($result->num_rows > 0){
+                while ($row = $result->fetch_assoc()){
+                    echo '<a href="/ujikom/users/detail_produk.php?id='. $row["id"].'" class="produk-card">';
+                    echo '<img src="/ujikom/admin/uploads/'.$row["image"].'" alt="' .$row["name"].'">';
+                    echo '<h3 style="text-decoration: none;">' . $row["name"].'</h3>';
+                    echo '<p>Rp '. number_format($row["price"],0, ',', '.'). '</p>';
+                    echo '</a>';
+                }
+            } else{
+                echo '<p> Tidak ada product tersedia </p>';
+            }
+        ?>
     </div>
 
     <!-- Pagination -->
