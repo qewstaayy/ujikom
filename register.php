@@ -1,49 +1,31 @@
-<?php 
+<?php
 session_start();
 require 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
+    $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $role = "user"; // Peran otomatis menjadi user
 
-    $stmt = $conn->prepare("INSERT INTO users (username, password, role) VALUES ( ?, ?, ?)");
-    $stmt->bind_param("sss", $username, $password, $role);
+    $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $username, $email, $password);
 
-    if($stmt->execute()){
-        $_SESSION['username'] = $username;
-        $_SESSION['role'] = $role;
+    if ($stmt->execute()) {
+        $_SESSION['user_id'] = $stmt->insert_id;
 
-        header("Location: /ujikom/users/user.php");
+        $redirect = isset($_GET['redirect']) ? '/ujikom/' . ltrim($_GET['redirect'], '/') : '/ujikom/index.php';
+        header("Location: " . $redirect);
         exit();
     } else {
-        echo "Error: " . $stmt->error;
+        echo "Gagal mendaftar!";
     }
-
-    $stmt->close();
 }
-
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrasi</title>
-</head>
-<body>
-    <h2>Registrasi Form</h2>
-
-    <form method="post" action="">
-        <label>Username: </label>
-        <input type="text" name="username" required><br>
-        <label>Password: </label>
-        <input type="text" name="password" required><br>
-        <button type="submit">Register</button>
-    </form>
-
-    <p> Sudah punya akun? <a href="login.php"> Login disini </a></p>
-    
-</body>
-</html>
+<form method="POST">
+    <input type="text" name="username" placeholder="username" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="password" name="password" placeholder="Password" required>
+    <button type="submit">Daftar</button>
+</form>
+<p>Sudah punya akun? <a href="login.php?redirect=checkout.php">Login di sini</a></p>
