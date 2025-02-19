@@ -2,7 +2,5 @@
 
 session_start();
 session_destroy();
-header("Location: ujikom/login.php");
+header("Location: /ujikom/login.php");
 exit();
-
-?>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 session_start();
 require '../config.php';
 
@@ -61,4 +61,3 @@ if ($result->num_rows > 0) {
     header("Location: keranjang.php?error=product_not_found");
     exit();
 }
-?>

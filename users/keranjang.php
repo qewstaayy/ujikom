@@ -9,10 +9,11 @@ require '../config.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <title>Keranjang Belanja</title>
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Poppins';
             margin: 0;
             padding: 0;
             background-color: #F9F9F9;
@@ -65,6 +66,8 @@ require '../config.php';
 </head>
 
 <body>
+    <header>
+    </header>
     <div class="container">
         <h1>Keranjang Belanja</h1>
 
@@ -126,7 +129,7 @@ require '../config.php';
             <p>Keranjang belanja kosong.</p>
             <a href="katalog.php" class="btn">Lihat Produk</a>
         <?php } ?>
-        <a href="katalog.php" class="btn">Kembali ke Katalog</a>
+        <a href="/ujikom/index.php" class="btn">Kembali ke Home</a>
     </div>
 
     <script>

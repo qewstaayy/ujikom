@@ -1,9 +1,9 @@
-    <?php 
+    <?php
     include '../config.php';
 
     session_start();
     if (!isset($_SESSION['username']) || $_SESSION['role'] !== "admin") {
-        header("Location: login.php");
+        header("Location: /ujikom/login.php");
         exit();
     }
 
@@ -11,18 +11,20 @@
 
     <!DOCTYPE html>
     <html lang="en">
+
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
         <title>Admin Dashboard</title>
         <style>
-            body{
+            body {
                 margin: 0;
                 font-family: Poppins;
                 display: flex;
             }
-            .sidebar{
+
+            .sidebar {
                 width: 250px;
                 background: #333;
                 color: wheat;
@@ -32,27 +34,33 @@
                 flex-direction: column;
                 justify-content: space-between;
             }
-            .sidebar h2{
+
+            .sidebar h2 {
                 text-align: center;
                 margin-bottom: 20px;
             }
-            .sidebar ul{
+
+            .sidebar ul {
                 list-style: none;
                 padding: 0;
                 flex-grow: 1;
             }
-            .sidebar  ul li{
+
+            .sidebar ul li {
                 padding: 15px 0;
             }
-            .sidebar ul li a{
+
+            .sidebar ul li a {
                 color: white;
                 text-decoration: none;
                 display: block;
             }
-            .sidebar ul li a :hover{
+
+            .sidebar ul li a :hover {
                 background-color: #575757;
                 padding-left: 10px;
             }
+
             .main-content {
                 margin-left: 250px;
                 padding: 40px;
@@ -63,6 +71,7 @@
                 flex-direction: column;
                 align-items: center;
             }
+
             header {
                 background: #34495e;
                 color: white;
@@ -71,8 +80,9 @@
                 width: 100%;
                 border-radius: 8px;
             }
-            .btn{
-                display:inline-block ;
+
+            .btn {
+                display: inline-block;
                 padding: 10px 15px;
                 background-color: #28a745;
                 color: white;
@@ -80,9 +90,11 @@
                 border-radius: 5px;
                 margin-top: 10px;
             }
-            .btn:hover{
+
+            .btn:hover {
                 background-color: #218838;
             }
+
             table {
                 width: 80%;
                 margin-top: 40px;
@@ -91,24 +103,30 @@
                 overflow: hidden;
                 border-collapse: collapse;
             }
-            th, td {
+
+            th,
+            td {
                 padding: 15px;
                 text-align: center;
                 border-bottom: 2px solid #ddd;
-            }   
-            tr:last-child td{
-                border-bottom: none; /* Hilangkan border bawah pada baris terakhir */
             }
-            th{
+
+            tr:last-child td {
+                border-bottom: none;
+                /* Hilangkan border bawah pada baris terakhir */
+            }
+
+            th {
                 background-color: #2c3e50;
                 color: white;
             }
-            td{
+
+            td {
                 font-size: 16px;
-                color:black;
+                color: black;
             }
-            
-            .btn-update{
+
+            .btn-update {
                 display: inline-block;
                 background-color: #ffc107;
                 color: black;
@@ -117,7 +135,8 @@
                 text-decoration: none;
                 border-radius: 5px;
                 font-size: 14px;
-             }
+            }
+
             .btn-delete {
                 display: inline-block;
                 background-color: #dc3545;
@@ -128,30 +147,33 @@
                 font-size: 14px;
                 text-decoration: none;
                 border-radius: 5px;
-             }
-            .btn-update:hover{
+            }
+
+            .btn-update:hover {
                 background-color: #e0a800;
             }
-            .btn-delete:hover{
+
+            .btn-delete:hover {
                 background-color: #c82333;
             }
         </style>
     </head>
+
     <body>
         <div class="sidebar">
             <h2> Admin Panel </h2>
-            <ul> 
+            <ul>
                 <li><a href=""> Dashboard</a></li>
                 <li><a href="form_product.php"> Add a new product</a></li>
                 <li><a href="../login.php" onclick="return confirm('Are you sure want to log out?');"> Logout</a></li>
             </ul>
         </div>
-            <div class="main-content">
+        <div class="main-content">
             <h2> Welcome, Admin <?php echo htmlspecialchars($_SESSION['username']); ?></h2>
             <p> This is your page</p>
             <h3> Manage ur Products</h3>
             <a href="form_product.php" class="btn"> Add New product</a>
-            
+
             <table>
                 <tr>
                     <th>Name</th>
@@ -160,7 +182,7 @@
                     <th>Actions</th>
                 </tr>
 
-                <?php 
+                <?php
                 include '../config.php';
 
                 $result = mysqli_query($conn, "SELECT * FROM products");
@@ -185,4 +207,5 @@
 
         </div>
     </body>
+
     </html>
