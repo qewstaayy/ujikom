@@ -1,5 +1,7 @@
 <?php
+session_start();
 require '../config.php';
+require '../includes/header.php';
 
 // Mengambil data pencarian dan kategori dari URL
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
@@ -31,102 +33,14 @@ $result = $conn->query($sql);
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <title>Katalog Produk - BloomÉlégance</title>
     <style>
-        body {
-
-            margin: 0;
-            padding: 0;
-            text-align: center;
-            font-family: poppins;
-            background-color: #F4CCE9;
-            color: #56021F;
-            display: flex;
-            min-height: 100vh;
-            flex-direction: column;
-        }
-
         .main-content {
             flex: 1;
         }
 
-        header {
-            background-color: #56021F;
-            padding: 10px;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Pastikan dropdown bisa ditampilkan */
-        .nav-links {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            padding: 0;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: white;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: #D17D98;
-        }
-
-        /* Atur posisi dropdown agar turunannya muncul */
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        /* Sembunyikan dropdown-content saat default */
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #56021F;
-            min-width: 100px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            list-style: none;
-            padding: 0;
-            top: 100%;
-            left: 0;
-            z-index: 1000;
-        }
-
-        /* Pastikan setiap item dalam dropdown terlihat rapi */
-        .dropdown-content li {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .dropdown-content li:last-child {
-            border-bottom: none;
-        }
-
-        /* Warna hover untuk menu dropdown */
-        .dropdown-content a {
-            display: block;
-            text-decoration: none;
-            color: white;
-            padding: 10px;
-        }
-
-        .dropdown-content a:hover {
-            background-color: #56021F;
-        }
-
-        /* Tampilkan dropdown saat hover */
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
         .container {
             padding: 20px;
+            color: #56021F;
+            flex: 1;
         }
 
         .search-filter {
@@ -220,42 +134,20 @@ $result = $conn->query($sql);
             opacity: 1;
         }
 
-        footer {
-            background-color: #333;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            margin-top: auto;
+        .stock-habis {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .stock-habis p {
+            color: red;
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
-
-    <header>
-        <h1>BloomÉlégance</h1>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="/ujikom/index.php">Home</a></li>
-                <li><a href="/ujikom/users/katalog.php">Katalog</a></li>
-                <li><a href="#">Tentang Kami</a></li>
-                <li><a href="/ujikom/users/keranjang.php">Keranjang</a></li>
-
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <li class="dropdown">
-                        <a href="#" class="dropbtn"><?php echo htmlspecialchars($_SESSION['username']); ?> ▼</a>
-                        <ul class="dropdown-content">
-                            <li><a href="logout.php">Logout</a></li>
-                        </ul>
-                    </li>
-                <?php else: ?>
-                    <li><a href="/ujikom/login.php">Login</a></li>
-                <?php endif; ?>
-            </ul>
-        </nav>
-    </header>
     <div class="container">
-        <h2>Katalog Produk Kami</h2>
 
         <!-- Search and filter -->
         <div class="search-filter">
@@ -275,28 +167,33 @@ $result = $conn->query($sql);
             <?php
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
-                    echo '<a href="/ujikom/users/detail_produk.php?id=' . $row["id"] . '" class="produk-card">';
+                    // Cek apakah stok masih tersedia
+                    if ($row["stock"] > 0) {
+                        echo '<a href="/ujikom/users/detail_produk.php?id=' . $row["id"] . '" class="produk-card">';
+                    } else {
+                        echo '<div class="produk-card stock-habis">';
+                    }
+
                     echo '<img src="/ujikom/admin/uploads/' . $row["image"] . '" alt="' . $row["name"] . '">';
-                    echo '<h3 style="text-decoration: none;">' . $row["name"] . '</h3>';
+                    echo '<h3>' . $row["name"] . '</h3>';
                     echo '<p>Rp ' . number_format($row["price"], 0, ',', '.') . '</p>';
-                    echo '</a>';
+
+                    if ($row["stock"] == 0) {
+                        echo '<p>Stock Habis</p>';
+                    }
+
+                    if ($row["stock"] > 0) {
+                        echo '</a>';
+                    } else {
+                        echo '</div>';
+                    }
                 }
             } else {
-                echo '<p> Tidak ada product tersedia </p>';
+                echo '<p>Tidak ada produk tersedia</p>';
             }
             ?>
         </div>
     </div>
-
-    <footer>
-        <p>© 2025 Bouquet Indah | Instagram: @bouquetindah </p>
-    </footer>
-
-    <script>
-        function addToFavorites(productId) {
-            alert("Produk " + productId + " telah ditambahkan ke favorit!");
-        }
-    </script>
 
 </body>
 

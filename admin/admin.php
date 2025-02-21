@@ -2,11 +2,10 @@
     include '../config.php';
 
     session_start();
-    if (!isset($_SESSION['username']) || $_SESSION['role'] !== "admin") {
+    if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
         header("Location: /ujikom/login.php");
         exit();
     }
-
     ?>
 
     <!DOCTYPE html>
@@ -26,7 +25,7 @@
 
             .sidebar {
                 width: 250px;
-                background: #333;
+                background: #56021F;
                 color: wheat;
                 padding: 20px;
                 height: 100vh;
@@ -37,7 +36,7 @@
 
             .sidebar h2 {
                 text-align: center;
-                margin-bottom: 20px;
+                margin-bottom: 40px;
             }
 
             .sidebar ul {
@@ -47,17 +46,19 @@
             }
 
             .sidebar ul li {
-                padding: 15px 0;
+                padding: 25px 0;
             }
 
             .sidebar ul li a {
+                display: block;
+                padding: 12px;
                 color: white;
                 text-decoration: none;
-                display: block;
+                transition: background 0.3s, color;
             }
 
             .sidebar ul li a :hover {
-                background-color: #575757;
+                background-color: rgb(231, 215, 221);
                 padding-left: 10px;
             }
 
@@ -65,26 +66,17 @@
                 margin-left: 250px;
                 padding: 40px;
                 flex-grow: 1;
-                background: #f8f9fa;
+                background: #D17D98;
                 min-height: 100vh;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
             }
 
-            header {
-                background: #34495e;
-                color: white;
-                padding: 15px;
-                text-align: center;
-                width: 100%;
-                border-radius: 8px;
-            }
-
             .btn {
                 display: inline-block;
                 padding: 10px 15px;
-                background-color: #28a745;
+                background-color: #56021F;
                 color: white;
                 text-decoration: none;
                 border-radius: 5px;
@@ -92,7 +84,8 @@
             }
 
             .btn:hover {
-                background-color: #218838;
+                background-color: rgb(124, 27, 61);
+                font-weight: bold;
             }
 
             table {
@@ -117,7 +110,7 @@
             }
 
             th {
-                background-color: #2c3e50;
+                background-color: #56021F;
                 color: white;
             }
 
@@ -128,8 +121,8 @@
 
             .btn-update {
                 display: inline-block;
-                background-color: #ffc107;
-                color: black;
+                background-color: #56021F;
+                color: white;
                 padding: 8px 12px;
                 margin: 5px;
                 text-decoration: none;
@@ -150,11 +143,14 @@
             }
 
             .btn-update:hover {
-                background-color: #e0a800;
+                background-color: rgb(124, 27, 61);
+                font-weight: bold;
             }
 
             .btn-delete:hover {
                 background-color: #c82333;
+                color: black;
+                font-weight: bold;
             }
         </style>
     </head>
@@ -170,16 +166,15 @@
         </div>
         <div class="main-content">
             <h2> Welcome, Admin <?php echo htmlspecialchars($_SESSION['username']); ?></h2>
-            <p> This is your page</p>
-            <h3> Manage ur Products</h3>
+            <p> Selamat mengedit barang barang yang ada</p>
             <a href="form_product.php" class="btn"> Add New product</a>
 
             <table>
                 <tr>
-                    <th>Name</th>
+                    <th>Nama</th>
                     <th>Stock</th>
-                    <th>Price</th>
-                    <th>Actions</th>
+                    <th>Harga</th>
+                    <th>Aksi</th>
                 </tr>
 
                 <?php

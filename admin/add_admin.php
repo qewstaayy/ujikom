@@ -2,13 +2,26 @@
 
 require '../config.php';
 
+// Cek koneksi database
+if (!$conn) {
+    die("Koneksi ke database gagal: " . mysqli_connect_error());
+}
+
 // Data admin
-$username = 'admin2';
-$email = 'admin@example.com'; // Tambahkan email agar bisa login
-$password = password_hash("admin4321", PASSWORD_DEFAULT);
+$username = 'elin';
+$email = 'admin@example.com'; // Email wajib agar bisa login
+$password = password_hash("elin1234", PASSWORD_DEFAULT);
 $role = 'admin';
 
-// Cek apakah admin sudah ada
+// Cek apakah tabel users memiliki kolom role
+$check_columns = $conn->query("SHOW COLUMNS FROM users LIKE 'role'");
+if ($check_columns->num_rows == 0) {
+    echo "❌ Kolom 'role' belum ada! Tambahkan dengan query: <br>";
+    echo "<code>ALTER TABLE users ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'user';</code>";
+    exit();
+}
+
+// Cek apakah admin sudah ada berdasarkan username atau email
 $check = $conn->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
 $check->bind_param("ss", $username, $email);
 $check->execute();

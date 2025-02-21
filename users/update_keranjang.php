@@ -3,7 +3,6 @@ session_start();
 require '../config.php';
 
 header('Content-Type: application/json');
-echo json_encode(["status" => "success", "message" => "Test response"]);
 
 // Tangani permintaan AJAX
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -43,9 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $total += $cartItem['price'] * $cartItem['quantity'];
     }
 
+    // Pastikan tidak mengakses produk yang sudah dihapus
     echo json_encode([
         "success" => true,
-        "new_quantity" => $_SESSION['cart'][$id]['quantity'] ?? 0,
+        "new_quantity" => isset($_SESSION['cart'][$id]) ? $_SESSION['cart'][$id]['quantity'] : 0,
         "new_subtotal" => isset($_SESSION['cart'][$id]) ? number_format($_SESSION['cart'][$id]['quantity'] * $_SESSION['cart'][$id]['price'], 0, ',', '.') : '0',
         "new_total" => number_format($total, 0, ',', '.')
     ]);

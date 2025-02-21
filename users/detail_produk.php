@@ -1,9 +1,16 @@
 <?php
+session_start();
 require '../config.php';
+require '../includes/header.php';
 
 // Pastikan koneksi database berjalan
 if (!$conn) {
     die("Koneksi database gagal: " . mysqli_connect_error());
+}
+// Jika user belum login, arahkan ke login.php dengan parameter redirect
+if (!isset($_SESSION['user_id'])) {
+    header("Location: /ujikom/login.php?redirect=detail_produk.php?id=" . $id);
+    exit();
 }
 
 // Mengecek apakah ada ID produk di URL dan mengamankannya
@@ -41,89 +48,11 @@ $imagePath = !empty($product['image']) ? "../admin/uploads/" . htmlspecialchars(
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <title>Detail Produk</title>
     <style>
-        header {
-            background-color: #56021F;
-            padding: 10px;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Pastikan dropdown bisa ditampilkan */
-        .nav-links {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            padding: 0;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: white;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: #D17D98;
-        }
-
-        /* Atur posisi dropdown agar turunannya muncul */
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        /* Sembunyikan dropdown-content saat default */
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #56021F;
-            min-width: 100px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            list-style: none;
-            padding: 0;
-            top: 100%;
-            left: 0;
-            z-index: 1000;
-        }
-
-        /* Pastikan setiap item dalam dropdown terlihat rapi */
-        .dropdown-content li {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .dropdown-content li:last-child {
-            border-bottom: none;
-        }
-
-        /* Warna hover untuk menu dropdown */
-        .dropdown-content a {
-            display: block;
-            text-decoration: none;
-            color: white;
-            padding: 10px;
-        }
-
-        .dropdown-content a:hover {
-            background-color: #56021F;
-        }
-
-        /* Tampilkan dropdown saat hover */
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #F9F9F9;
+            background-color: #FFC0CB;
             color: #333;
         }
 
@@ -184,7 +113,7 @@ $imagePath = !empty($product['image']) ? "../admin/uploads/" . htmlspecialchars(
         .btn {
             display: inline-block;
             text-decoration: none;
-            background: #7D1C4A;
+            background: #56021F;
             color: white;
             padding: 12px 20px;
             border-radius: 5px;
@@ -207,30 +136,6 @@ $imagePath = !empty($product['image']) ? "../admin/uploads/" . htmlspecialchars(
 </head>
 
 <body>
-    <header>
-
-        <h1>BloomÉlégance</h1>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="#">Home</a></li>
-                <li><a href="/ujikom/users/katalog.php">Katalog</a></li>
-                <li><a href="#">Tentang Kami</a></li>
-                <li><a href="/ujikom/users/keranjang.php">Keranjang</a></li>
-
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <li class="dropdown">
-                        <a href="#" class="dropbtn"><?php echo htmlspecialchars($_SESSION['username']); ?> ▼</a>
-                        <ul class="dropdown-content">
-                            <li><a href="logout.php">Logout</a></li>
-                        </ul>
-                    </li>
-                <?php else: ?>
-                    <li><a href="/ujikom/login.php">Login</a></li>
-                <?php endif; ?>
-            </ul>
-        </nav>
-    </header>
-
     <div class="container">
         <img src="<?php echo $imagePath; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="product-img">
 
@@ -239,22 +144,8 @@ $imagePath = !empty($product['image']) ? "../admin/uploads/" . htmlspecialchars(
             <p class="price">Rp <?php echo number_format($product['price'], 0, ',', '.'); ?></p>
             <p class="description"><?php echo htmlspecialchars($product['description']); ?></p>
             <p class="stock-info">Stock: <?php echo $stock; ?> pcs</p>
+            <a href="cart.php?id=<?php echo $product['id']; ?>" class="btn">Menambahkan ke keranjang</a>
 
-            <?php if ($stock > 0) { ?>
-                <label for="quantity">Quantity</label>
-                <select id="quantity" name="quantity">
-                    <?php
-                    $maxQuantity = min($stock, 10);
-                    for ($i = 1; $i <= $maxQuantity; $i++) {
-                        echo "<option value='$i'>$i</option>";
-                    }
-                    ?>
-                </select>
-                <br>
-                <a href="cart.php?id=<?php echo $product['id']; ?>" class="btn">Add to Cart</a>
-            <?php } else { ?>
-                <p class="out-of-stock">Out of Stock</p>
-            <?php } ?>
 
             <br>
             <a href="katalog.php" class="btn">Kembali ke Katalog</a>

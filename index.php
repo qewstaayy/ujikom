@@ -1,10 +1,17 @@
 <?php
 session_start();
 require 'config.php';
+require 'includes/header.php';
+
+// Pengecekan login hanya untuk fitur tertentu, bukan untuk katalog
+$loggedIn = isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role'] == 'user';
+
 
 // Ambil daftar produk dari database
 $sql = "SELECT * FROM products";
 $result = $conn->query($sql);
+
+
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -15,135 +22,43 @@ $result = $conn->query($sql);
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <title>BloomÉlégance</title>
     <style>
-        header {
-            background-color: #FFC0CB;
-            padding: 10px;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            width: 400px;
-            height: 115px;
-        }
-
-        /* Pastikan dropdown bisa ditampilkan */
-        .nav-links {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-            align-items: center;
+        * {
+            margin: 0;
             padding: 0;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #56021F;
-            transition: color 0.3s ease;
-            font-weight: bold;
-            font-size: 20px;
-        }
-
-        .nav-links a:hover {
-            color: rgb(236, 162, 173);
-        }
-
-        /* Atur posisi dropdown agar turunannya muncul */
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        /* Sembunyikan dropdown-content saat default */
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #FFC0CB;
-            min-width: 100px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            list-style: none;
-            padding: 0;
-            top: 100%;
-            left: 0;
-            z-index: 1000;
-        }
-
-        /* Pastikan setiap item dalam dropdown terlihat rapi */
-        .dropdown-content li {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .dropdown-content li:last-child {
-            border-bottom: none;
-        }
-
-        /* Warna hover untuk menu dropdown */
-        .dropdown-content a {
-            display: block;
-            text-decoration: none;
-            color: #56021F;
-            padding: 10px;
-        }
-
-        .dropdown-content a:hover {
-            background-color: #FFC0CB;
-            display: block;
-        }
-
-        /* Tampilkan dropdown saat hover */
-        .dropdown:hover .dropdown-content {
-            display: block;
+            box-sizing: border-box;
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            text-align: center;
-            font-family: poppins;
+            font-family: 'Poppins';
             background-color: #FFC0CB;
-            display: flex;
-            min-height: 100vh;
-            flex-direction: column;
         }
 
-        .promo-section {
-            display: flex;
-            flex-direction: column;
-            align-items: left;
-            text-align: left;
-        }
-
+        /* Promo Section */
         .promo-container {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
-            /* Posisikan vertikal sejajar */
-            justify-content: space-between;
-            /* Jarak antara gambar dan teks */
+            justify-content: center;
             width: 90%;
-            /* Lebar kontainer */
-            /* Maksimal lebar */
-            margin: 0 auto;
-            /* Tengah di dalam halaman */
+            margin: 20px auto;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .promo-image {
+            flex: 1;
+            max-width: 500px;
         }
 
         .promo-image img {
-            margin-top: 30px;
             width: 100%;
-            /* Biar tidak terlalu besar */
-            height: 400px;
-            object-fit: cover;
+            height: auto;
+            border-radius: 10px;
         }
 
-
-        /* Bagian teks setelah gambar */
         .promo-text {
-            width: 40%;
-            height: 200px;
-            /* Pastikan teks berada di kanan */
+            flex: 1;
+            max-width: 400px;
             background: white;
             padding: 20px;
             border-radius: 10px;
@@ -156,14 +71,29 @@ $result = $conn->query($sql);
             font-weight: bold;
         }
 
-        .promo-text h3 {
-            color: #56021F;
-            font-size: 15px;
-        }
-
         .promo-text p {
             font-size: 16px;
             color: #333;
+            margin-top: 10px;
+        }
+
+        .promo-text h3 {
+            color: #56021F;
+            font-size: 15px;
+            margin-top: 10px;
+        }
+
+        /* Produk Section */
+        .katalog {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .judul {
+            font-size: 25px;
+            font-weight: bold;
+            color: #56021F;
+            margin-bottom: 20px;
         }
 
         .produk-container {
@@ -174,38 +104,16 @@ $result = $conn->query($sql);
             padding: 20px;
         }
 
-        .judul {
-            position: relative;
-            text-align: center;
-            font-size: 25px;
-            font-weight: bold;
-            margin-top: 50px;
-            color: #56021F;
-            padding-top: 30px;
-        }
-
-        .judul::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 90%;
-            height: 2px;
-            background-color: #8b5d67;
-            transform: translateX(-50%);
-        }
-
         .produk-card {
-            margin-top: 20px;
-            border: 1px solid #D17D98;
+            width: 200px;
+            background: white;
             padding: 10px;
             border-radius: 10px;
-            background-color: white;
-            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.1);
-            width: 200px;
             text-align: center;
+            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease-in-out;
             text-decoration: none;
+            color: black;
         }
 
         .produk-card:hover {
@@ -229,75 +137,104 @@ $result = $conn->query($sql);
             color: #27ae60;
         }
 
+        .stock-habis {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .stock-habis p {
+            color: red;
+            font-weight: bold;
+        }
+
         footer {
-            background-color: #B76E79;
+            background-color: #56021F;
             color: white;
             padding: 10px;
             text-align: center;
             margin-top: auto;
+            width: 100%;
+        }
+
+        /* Responsiveness */
+        @media screen and (max-width: 768px) {
+            .promo-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .promo-text {
+                max-width: 100%;
+                text-align: center;
+            }
+
+            .produk-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .produk-card {
+                width: 90%;
+                max-width: 250px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <header>
-        <img class="logo" src="admin/uploads/logo.png" alt="Logo">
-        <nav>
-            <ul class="nav-links">
-                <li><a href="#">Home</a></li>
-                <li><a href="/ujikom/users/katalog.php">Katalog</a></li>
-                <li><a href="#">Tentang Kami</a></li>
-                <li><a href="/ujikom/users/keranjang.php">Keranjang</a></li>
 
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <li class="dropdown">
-                        <a href="#" class="dropbtn"><?php echo htmlspecialchars($_SESSION['username']); ?> ▼</a>
-                        <ul class="dropdown-content">
-                            <li><a href="logout.php">Logout</a></li>
-                        </ul>
-                    </li>
-                <?php else: ?>
-                    <li><a href="login.php">Login</a></li>
-                <?php endif; ?>
-            </ul>
-        </nav>
-    </header>
-
-
+    <!-- Promo Section -->
     <div class="promo-container">
         <div class="promo-image">
             <img src="admin/uploads/bg3.jpg" alt="Buket Bunga Fresh">
         </div>
         <div class="promo-text">
-            <h2>A Small gift gives a Deep Meaning</h2>
-            <p>Let each petal speak more than words. Our fresh flower bouquet is a symbol of everlasting affection. </p>
+            <h2>A Small Gift Gives a Deep Meaning</h2>
+            <p>Let each petal speak more than words. Our fresh flower bouquet is a symbol of everlasting affection.</p>
             <h3>BloomÉlégance</h3>
         </div>
     </div>
 
-
+    <!-- Produk Section -->
     <section class="katalog">
         <h2 class="judul">Produk Populer</h2>
-        <div class=" produk-container">
+        <div class="produk-container">
             <?php
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
-                    echo '<a href="/ujikom/users/detail_produk.php?id=' . $row["id"] . '" class="produk-card">';
+                    // Cek apakah stok masih tersedia
+                    if ($row["stock"] > 0) {
+                        echo '<a href="/ujikom/users/detail_produk.php?id=' . $row["id"] . '" class="produk-card">';
+                    } else {
+                        echo '<div class="produk-card stock-habis">';
+                    }
+
                     echo '<img src="admin/uploads/' . $row["image"] . '" alt="' . $row["name"] . '">';
                     echo '<h3>' . $row["name"] . '</h3>';
                     echo '<p>Rp ' . number_format($row["price"], 0, ',', '.') . '</p>';
-                    echo '</a>';
+
+                    if ($row["stock"] == 0) {
+                        echo '<p>Stock Habis</p>';
+                    }
+
+                    if ($row["stock"] > 0) {
+                        echo '</a>';
+                    } else {
+                        echo '</div>';
+                    }
                 }
             } else {
-                echo '<p> Tidak ada produk tersedia </p>';
+                echo '<p>Tidak ada produk tersedia</p>';
             }
             ?>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
-        <p>© 2025 Bouquet Indah | Instagram: @bouquetindah </p>
+        <p>© 2025 BloomÉlégance | Instagram: @BloomÉlégance</p>
     </footer>
+
 </body>
 
 </html>

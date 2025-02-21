@@ -2,46 +2,34 @@
 session_start();
 require 'config.php';
 
-// Jika sudah login, redirect ke halaman utama
-if (isset($_SESSION['user_id'])) {
-    header("Location: index.php");
-    exit();
-}
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = trim($_POST['email']);
-    $password = trim($_POST['password']);
+    $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+    $password = isset($_POST['password']) ? trim($_POST['password']) : '';
 
-    $stmt = $conn->prepare("SELECT id, username, password, role FROM users WHERE email = ?");
-
-    if ($stmt) {
+    if (!empty($email) && !empty($password)) {
+        $stmt = $conn->prepare("SELECT id, password, role FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
 
-        if ($result->num_rows > 0) {
-            $user = $result->fetch_assoc();
-            if (password_verify($password, $user['password'])) {
-                // Simpan data user ke session
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['username'] = $user['username'];
-                $_SESSION['role'] = $user['role'];
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['role'] = $user['role'];
+            $_SESSION['username'] = $user['email'];
 
-                // Arahkan berdasarkan role
-                if ($user['role'] == 'admin') {
-                    header("Location: /ujikom/admin/admin.php"); // Ganti dengan halaman admin
-                } else {
-                    header("Location: /ujikom/index.php"); // Halaman user biasa
-                }
-                exit();
+            // Arahkan berdasarkan role
+            if ($user['role'] == 'admin') {
+                header("Location: admin/admin.php");
             } else {
-                $error = "⚠️ Password salah!";
+                header("Location: index.php");
             }
+            exit();
         } else {
-            $error = "⚠️ Email tidak ditemukan!";
+            $error = "Email atau password salah!";
         }
     } else {
-        $error = "❌ Terjadi kesalahan pada database.";
+        $error = "Harap isi semua kolom!";
     }
 }
 ?>
@@ -55,9 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <title>Login</title>
     <style>
-        /* Global Styles */
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Poppins';
             background-color: #FFC0CB;
             display: flex;
             justify-content: center;
@@ -66,12 +53,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin: 0;
         }
 
-        .logo {
-            width: 400px;
-            height: 115px;
-        }
-
-        /* Container Styling */
         .container {
             background: #fff;
             padding: 40px;
@@ -84,15 +65,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             align-items: center;
         }
 
-        /* Heading */
+        .logo {
+            width: 400px;
+            height: auto;
+        }
+
         h2 {
-            margin-bottom: 20px;
             color: #56021F;
             font-size: 32px;
             font-weight: 600;
         }
 
-        /* Form Styling */
         form {
             width: 100%;
             display: flex;
@@ -116,7 +99,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-size: 14px;
         }
 
-        /* Button Styling */
         button {
             width: 100%;
             padding: 12px;
@@ -134,7 +116,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-weight: bold;
         }
 
-        /* Link Styling */
         p {
             margin-top: 15px;
             font-size: 14px;
@@ -160,16 +141,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php if (isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
 
         <form method="POST">
-            <label>Email:</label>
-            <input type="email" name="email" placeholder="Email" required>
-            <label>Password: </label>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit" class="login">Login</button>
+            <label for="email">Email:</label>
+            <input type="email" name="email" placeholder="Masukkan email" required>
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" placeholder="Masukkan password" required>
+
+            <button type="submit">Login</button>
         </form>
 
-        <p>Belum punya akun? <a href="register.php?redirect=checkout.php">Daftar di sini</a></p>
+        <p>Belum punya akun? <a href="register.php">Daftar di sini</a></p>
     </div>
-
 </body>
 
 </html>

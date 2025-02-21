@@ -2,28 +2,55 @@
 session_start();
 require 'config.php';
 
+$error = '';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
 
-    $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $username, $email, $password);
-
-    if ($stmt->execute()) {
-        $_SESSION['user_id'] = $stmt->insert_id;
-
-        $redirect = isset($_GET['redirect']) ? '/ujikom/' . ltrim($_GET['redirect'], '/') : '/ujikom/index.php';
-        header("Location: " . $redirect);
-        exit();
+    // Validasi input
+    if (empty($username) || empty($email) || empty($password)) {
+        $error = "Semua kolom harus diisi!";
+    } elseif (!preg_match('/^[a-zA-Z0-9_]{3,20}$/', $username)) {
+        $error = "Username hanya boleh huruf, angka, dan underscore (3-20 karakter)!";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Email tidak valid!";
+    } elseif (strlen($password) < 6) {
+        $error = "Password minimal 6 karakter!";
     } else {
-        echo "Gagal mendaftar!";
+        // Cek apakah username atau email sudah digunakan
+        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ? OR username = ?");
+        $stmt->bind_param("ss", $email, $username);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            $error = "Username atau email sudah terdaftar!";
+        } else {
+            // Hash password dan simpan data ke database
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            $role = "user"; // Default user, admin harus ditambahkan manual
+
+            $stmt = $conn->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("ssss", $username, $email, $hashed_password, $role);
+
+            if ($stmt->execute()) {
+                $_SESSION['user_id'] = $stmt->insert_id;
+                $_SESSION['username'] = $username;
+                $_SESSION['role'] = $role;
+                header("Location: login.php?success=1");
+                exit();
+            } else {
+                $error = "Gagal mendaftarkan akun. Silakan coba lagi!";
+            }
+        }
     }
 }
-
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
@@ -31,7 +58,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Registrasi</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* Global Styles */
         body {
             font-family: 'Poppins';
             background-color: #FFC0CB;
@@ -42,12 +68,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin: 0;
         }
 
-        .logo {
-            width: 400px;
-            height: 115px;
-        }
-
-        /* Container Styling */
         .container {
             background: #fff;
             padding: 40px;
@@ -60,15 +80,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             align-items: center;
         }
 
-        /* Heading */
+        .logo {
+            width: 400px;
+            height: auto;
+        }
+
         h2 {
-            margin-bottom: 20px;
-            color: #B76E79;
+            color: #56021F;
             font-size: 32px;
             font-weight: 600;
         }
 
-        /* Form Styling */
         form {
             width: 100%;
             display: flex;
@@ -92,11 +114,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-size: 14px;
         }
 
-        /* Button Styling */
         button {
             width: 100%;
             padding: 12px;
-            background: #B76E79;
+            background: #56021F;
             color: white;
             border: none;
             border-radius: 5px;
@@ -106,17 +127,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         button:hover {
-            background: #A1626D;
+            background: rgb(131, 34, 68);
+            font-weight: bold;
         }
 
-        /* Link Styling */
         p {
             margin-top: 15px;
             font-size: 14px;
         }
 
         a {
-            color: #B76E79;
+            color: #56021F;
             text-decoration: none;
             font-weight: 500;
         }
@@ -132,16 +153,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <img class="logo" src="admin/uploads/logo.png" alt="Logo">
         <h2>Registrasi</h2>
 
+        <?php if (!empty($error)) echo "<p class='error'>$error</p>"; ?>
         <form method="POST">
-            <label for="username">Username: </label>
-            <input type="text" name="username" placeholder="username" required>
-            <label for="email">Email: </label>
-            <input type="email" name="email" placeholder="Email" required>
-            <label for="password">Password: </label><input type="password" name="password" placeholder="Password" required>
+            <label for="username">Username:</label>
+            <input type="username" name="username" placeholder="Masukkan username" required>
+
+            <label for="email">Email:</label>
+            <input type="email" name="email" placeholder="Masukkan email" required>
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" placeholder="Masukkan password" required>
+
             <button type="submit">Daftar</button>
         </form>
-        <p>Sudah punya akun? <a href="login.php?redirect=checkout.php">Login di sini</a></p>
 
+        <p>Sudah punya akun? <a href="login.php">Login di sini</a></p>
     </div>
 </body>
 
